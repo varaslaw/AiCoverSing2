@@ -21,6 +21,7 @@ import logging
 
 from mega import Mega  # type: ignore
 from tenacity import retry, wait_fixed, stop_after_attempt
+from pathlib import Path  # ensure Path is available within main
 
 logger = logging.getLogger(__name__)
 
