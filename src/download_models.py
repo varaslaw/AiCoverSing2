@@ -19,7 +19,6 @@ from __future__ import annotations
 import os
 import logging
 
-from mega import Mega  # type: ignore
 from tenacity import retry, wait_fixed, stop_after_attempt
 from pathlib import Path  # ensure Path is available within main
 
@@ -34,19 +33,37 @@ def download_from_url(url: str, dest: str) -> None:
     используется requests. Если загрузка прерывается, будет предпринято
     несколько попыток.
     """
+    Path(dest).parent.mkdir(parents=True, exist_ok=True)
+
     if url.startswith("https://mega.nz"):
-        m = Mega()
-        m.login()  # анонимная сессия
-        logger.info("MEGA-загрузка: %s", url)
-        m.download_url(url, dest)
+        try:
+            from mega import Mega  # type: ignore
+        except Exception as exc:  # pragma: no cover - зависит от окружения
+            raise RuntimeError(
+                "Не удалось инициализировать mega.py. Попробуйте снова установить"
+                " зависимости (`pip install mega.py`) или скачайте файл вручную."
+            ) from exc
+
+        try:
+            m = Mega()
+            m.login()  # анонимная сессия
+            logger.info("MEGA-загрузка: %s", url)
+            m.download_url(url, dest)
+        except Exception as exc:  # pragma: no cover - зависит от сети
+            raise RuntimeError(
+                "Скачивание через MEGA не удалось. Проверьте ссылку или повторите"
+                " попытку позже."
+            ) from exc
     else:
         import requests
+
         logger.info("Загрузка: %s", url)
-        with requests.get(url, stream=True) as r:
+        with requests.get(url, stream=True, timeout=60) as r:
             r.raise_for_status()
             with open(dest, "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):
-                    f.write(chunk)
+                    if chunk:
+                        f.write(chunk)
     logger.info("Файл сохранён: %s", dest)
 
 
