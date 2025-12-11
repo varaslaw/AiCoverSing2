@@ -1,0 +1,25 @@
+# Список зависимостей для обновлённой версии AISingersCoverGen
+# Вы можете установить все необходимые библиотеки одной командой:
+#   pip install -r requirements.txt
+
+torch>=2.0
+torchaudio>=2.0
+faiss-cpu>=1.7
+librosa>=0.10
+numpy>=1.23
+scipy>=1.9
+scikit-learn>=1.3
+pysoundfile>=0.12
+pyworld>=0.3
+parselmouth>=0.3
+gradio>=4.0
+soundfile>=0.12
+ffmpeg-python>=0.2
+requests>=2.31
+cryptography>=41.0
+mega.py>=2.0
+tenacity>=8.2
+torchcrepe>=0.0.22
+rmvpe  # библиотека для извлечения высоты тона RMVPE
+torchfcpe  # библиотека для извлечения высоты тона FCPE
+python-speech-features>=0.6
